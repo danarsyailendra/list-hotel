@@ -10,7 +10,7 @@
    ```
 5. Restart PHP service
 
-## Run The APP
+## Run The App
 1. Clone this repository
 2. Run this command for install unit test library
     ```
