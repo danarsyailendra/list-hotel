@@ -58,15 +58,29 @@ class Hotel
     public function listHotels($start, $limit, $sort = "desc")
     {
         $sort = ($sort == "asc") ? SORT_ASC : SORT_DESC;
+
+        //get key for sort
         $keys = array_column($this->hotels, 'AvailableRooms');
+
+        //sort array
         array_multisort($keys, $sort, $this->hotels);
+
+        //get root index of pointer
         $pointer = $this->findIndex($start, $this->hotels, $sort);
+
+        //count limit, if limit more than sum of data then limit = sum of data
         $limit = ($pointer + $limit > count($this->hotels)) ? count($this->hotels) : $pointer + $limit;
         $result_hotel = [];
         $next_start = 0;
+
+        //if root index is not null then loop the data
         if ($pointer !== null) {
             for ($i = $pointer; $i < $limit; $i++) {
+
+                //push data
                 $result_hotel[] = $this->hotels[$i];
+
+                //set next start
                 $next_start = $this->hotels[$i]['AvailableRooms'];
 
             }
@@ -81,14 +95,21 @@ class Hotel
 
     private function findIndex($available, $array, $sort)
     {
+        //if pointer is zero then return zero
         if ($available === 0) {
             return 0;
         }
 
-
+        //check if pointer is in data
         foreach ($array as $key => $value) {
+
+            //if pointer found
             if ($value['AvailableRooms'] == $available) {
+
+                //check next data available or not
                 if (isset($array[$key + 1]['AvailableRooms'])) {
+
+                    //if next data's available room != current available return next data
                     if ($array[$key + 1]['AvailableRooms'] != $value['AvailableRooms']) {
                         return $key + 1;
                     }
@@ -98,6 +119,9 @@ class Hotel
 
         }
 
+        //for case pointer not found in data
+
+        //if sort is desc find room with less than current pointer
         if ($sort == SORT_DESC) {
             foreach ($array as $key => $value) {
                 if ($value['AvailableRooms'] < $available) {
@@ -106,6 +130,7 @@ class Hotel
 
             }
         } else {
+            //if sort is desc find room with more than current pointer
             foreach ($array as $key => $value) {
                 if ($value['AvailableRooms'] > $available) {
                     return $key;
@@ -113,6 +138,8 @@ class Hotel
 
             }
         }
+
+        //if not meet all scenario
         return null;
     }
 }
